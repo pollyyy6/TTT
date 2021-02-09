@@ -1,0 +1,35 @@
+﻿@model TTTModel
+
+@foreach (TTTRow row in Model.rows)
+{
+    <div class="gamerow">
+        @foreach (TTTCell cell in row.cells)
+        {
+            String classvar = "";
+            if (cell.State == TTTCell.StateX)
+            {
+                classvar = "colorRed";
+            }
+            else if (cell.State == TTTCell.StateO)
+            {
+                classvar = "colorBlue";
+            }
+            <div class="gamecell">
+                @if (cell.State == TTTCell.StateEmpty && Model.HasTurn)
+                {
+                    <a href="#" onclick="fsendXY(@cell.num, @row.num)">
+                        <div class="@classvar">
+                            @Html.Raw(cell.Render())
+                        </div>
+                    </a>
+                }
+                else
+                {
+                    <div class="@classvar">
+                        @Html.Raw(cell.Render())
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}

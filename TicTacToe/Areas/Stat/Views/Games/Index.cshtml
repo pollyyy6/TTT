@@ -1,0 +1,50 @@
+﻿@using TicTacToe.Data
+@model IEnumerable<TicTacToe.Data.Game>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.User1.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User2.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Start)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Finish)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (TicTacToe.Data.Game item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.User1.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User2.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Start)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Finish)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

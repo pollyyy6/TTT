@@ -1,0 +1,115 @@
+﻿@model TicTacToe.Data.Game
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@functions{
+    public async Task DrawField(int stepsToRender)
+    {
+        TTTModel tm = new TTTModel();
+        tm.Init(Model.Steps.Take(stepsToRender).ToList<TicTacToe.Classes.IStep>());
+        <div class="gamecontainer">
+            <partial name="FieldPartial" model="tm" />
+        </div>
+    }
+}
+
+<h1>Details</h1>
+
+<style>
+    .gamerow
+    {
+    }
+
+    .colorRed
+    {
+        color: red;
+    }
+
+    .colorBlue
+    {
+        color: blue;
+    }
+
+    .gamecell
+    {
+        background-color: beige;
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        border: 1px #c7c796 solid;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        font-family: cursive;
+        user-select: none;
+    }
+    .gamecontainer
+    {
+        width: 100%;
+        text-align: center;
+    }
+
+    .table td
+    {
+        max-width:unset;
+        vertical-align:middle;
+    }
+
+    .table
+    {
+        width:auto;
+    }
+</style>
+
+<div>
+    <h4>Game</h4>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Player
+                </th>
+                <th>
+                    Time
+                </th>
+                <th>
+                    X/O
+                </th>
+                <th>
+                    Position
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+
+
+            @for (int i = 0; i < Model.Steps.Count; i++)
+            {
+                TicTacToe.Data.Step st = Model.Steps.ElementAt(i);
+                <tr>
+                    <td>
+                        @st.User.Email
+                    </td>
+                    <td>
+                        @st.StepTime
+                    </td>
+                    <td>
+                        @(i % 2 == 0 ? "X" : "O")
+                    </td>
+                    <td>
+                        @{await DrawField(i+1);}
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

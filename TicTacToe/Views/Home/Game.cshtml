@@ -1,0 +1,36 @@
+﻿
+@{
+	ViewData["Title"] = "Game";
+}
+
+<h1>Fight!</h1>
+<a asp-action="PreGame">Return to game list</a>
+<div id="game" class="gamecontainer">
+	<partial name="TTT" />
+</div>
+
+@section AjaxUnobtrusive
+{
+	<script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.js"></script>
+}
+
+<script src="~/lib/microsoft-signalr/signalr.js"></script>
+<script src="~/js/SR.js"></script>
+
+<script>
+
+	connection.on("UpdateGame", function ()
+	{
+		upd();
+	});
+
+	function upd()
+	{
+		$("#gupd").submit();
+	}
+
+	$(document).ready(function ()
+	{
+		upd();
+	});
+</script>

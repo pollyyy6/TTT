@@ -1,0 +1,55 @@
+﻿@using TicTacToe.Classes
+@using TicTacToe.Data
+@inject GameSRIDS ConnectedUsers
+@inject Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> um
+@inject InviteManager Im
+@inject TicTacToe.Data.ApplicationDbContext db
+
+@{
+    Microsoft.AspNetCore.Identity.IdentityUser cu = await um.GetUserAsync(User);
+}
+
+@foreach (KeyValuePair<String, SignalRUser> user in ConnectedUsers.Users)
+{
+    if (cu != null && user.Value.UserId != cu.Id)@*исключает приглашение самому себе*@
+    {
+        <div>
+            @{
+                Game g = db.GetActiveGame(cu.Id, user.Value.UserId);
+                int? gameid = g?.Id;
+            }
+            @if (gameid != null)
+            {
+                <input type="button" value="play with @user.Value.Email" onclick="onAcceptResponse(@gameid)" />
+            }
+            else
+            {
+                @user.Value.Email
+                if (Im.IsInvitationSent<GameInvitation>(cu.Id, user.Key))
+                {
+                    if (Im.GetRole<GameInvitation>(cu.Id, user.Value.UserId) == Invitation.RoleRecipient)
+                    {
+                        <input type="button" value="accept invite" onclick="AcceptInvitation('@user.Value.Email');" />
+                        <input type="button" value="reject invite" onclick="RejectInvite('@user.Value.Email');" />
+                    }
+                    else
+                    {
+                        <input type="button" value="cancel invite" onclick="CancelInvite('@user.Value.Email');" />
+                    }
+                }
+                else
+                {
+                    if (!Im.IsInvitationRejected<GameInvitation>(cu.Id, user.Key))
+                    {
+                        <input type="button" value="invite" onclick="SendInvite('@user.Value.Email');" />
+                    }
+                    else
+                    {
+                        <input type="button" value="invite" disabled onclick="SendInvite('@user.Value.Email');" />
+                    }
+                }
+            }
+        </div>
+    }
+}
+

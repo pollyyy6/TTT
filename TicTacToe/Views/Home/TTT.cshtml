@@ -1,0 +1,95 @@
+﻿@model TTTModel
+<style>
+	.gamecontainer
+	{
+		width: 100%;
+		text-align: center;
+		margin-top: 5vw;
+	}
+
+	.gamerow
+	{
+	}
+
+	.colorRed
+	{
+		color: red;
+	}
+
+	.colorBlue
+	{
+		color: blue;
+	}
+
+	.gamecell
+	{
+		background-color: beige;
+		width: 100px;
+		height: 100px;
+		display: inline-block;
+		border: 1px #c7c796 solid;
+		border-radius: 5px;
+		font-size: 62px;
+		font-family: cursive;
+		user-select: none;
+	}
+
+	a:hover
+	{
+		text-decoration: none;
+	}
+
+	.pressable
+	{
+		cursor: pointer;
+	}
+</style>
+
+<form id="gupd" asp-action="TTT" method="post" data-ajax-update="#game" data-ajax-mode="replace" data-ajax="true">
+	<input type="hidden" name="GameId" value="@ViewData["GameId"]" />
+	<input type="submit" style="visibility:hidden;" />
+</form>
+
+<form id="xyform" asp-action="Go" method="post" data-ajax-update="#game" data-ajax-mode="replace" data-ajax="true">
+	<input type="hidden" name="GameId" value="@ViewData["GameId"]" />
+	<input id="fx" type="hidden" name="x" />
+	<input id="fy" type="hidden" name="y" />
+</form>
+
+
+@if (Model != null)
+{
+
+    String dv = "";
+    String t = "";
+    if (Model.HasTurn == true)
+    {
+        dv = "colorBlue";
+        t = "Go!";
+    }
+    else
+    {
+        dv = "colorRed";
+        t = "Wait...";
+    }
+
+    String winmes = "";
+    if (Model.Winner != null)
+    {
+		winmes = Model.Winner + " wins!!!";
+    }
+
+	<div class="@dv">@t</div>
+	<div class="winner">@winmes</div>
+	<partial name="FieldPartial" model="Model" />
+}
+
+
+<script>
+	function fsendXY(x, y)
+	{
+		$("#fx").val(x);
+		$("#fy").val(y);
+		$("#xyform").submit();
+	}
+</script>

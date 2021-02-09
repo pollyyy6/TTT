@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jquery-ajax-unobtrusive@3.2.6",
+      "destination": "wwwroot/lib/jquery-ajax-unobtrusive/"
+    },
+    {
+      "library": "microsoft-signalr@5.0.0-preview.3.20215.14",
+      "destination": "wwwroot/lib/microsoft-signalr/"
+    },
+    {
+      "library": "vue@3.0.5",
+      "destination": "wwwroot/lib/vue/"
+    }
+  ]
+}

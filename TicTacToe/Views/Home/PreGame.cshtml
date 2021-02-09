@@ -1,0 +1,102 @@
+﻿
+<form id="AUForm" asp-action="ActiveUsers" asp-area="" asp-controller="Home" data-ajax-update="#UserContainer" data-ajax-mode="replace" data-ajax="true">
+</form>
+
+<div id="UserContainer">
+    users:
+</div>
+
+@section AjaxUnobtrusive
+{
+    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.js"></script>
+}
+
+<script src="~/lib/microsoft-signalr/signalr.js"></script>
+<script src="~/js/SR.js"></script>
+
+<script>
+  
+    connection.on("UserAdded", function (user)
+    {
+        $("#AUForm").submit();
+    });
+
+    connection.on("UserRemoved", function (user)
+    {
+        $("#AUForm").submit();
+    });
+
+    connection.on("ReceiveInvite", function (email)
+    {
+        $("#UserContainer").append("<div>user " + email + " invited to your game</div>");
+        $("#AUForm").submit();
+        //alert("user " + email + " invited you to game");
+    });
+
+    connection.on("GoGame", function (GameId)
+    {
+        onAcceptResponse(GameId);
+    });
+
+    connection.on("UpdateForm", function ()
+    {
+        $("#AUForm").submit();
+    });
+
+
+    function SendInvite(em)
+    {
+        $.post("@Url.Action("SendInvite")", { email: em }, OnSendInviteResponse);
+    }
+
+    function OnSendInviteResponse(data)
+    {
+        $("#UserContainer").append("<div>" + data + "</div>");
+        $("#AUForm").submit();
+        //alert(data);
+    }
+
+    function AcceptInvitation(em)
+    {
+        $.post("@Url.Action("AcceptInvitation")", { email: em }, onAcceptResponse);
+    }
+
+    function onAcceptResponse(data)
+    {
+        if (data != undefined)
+        {
+            window.location.href = "@Url.Action("Game")?GameId="+data;
+        }
+    }
+
+    function RejectInvite(em)
+    {
+        $.post("@Url.Action("RejectInvitation")", { email: em }, OnRejectResponse);
+    }
+
+    function OnRejectResponse(data)
+    {
+        if (data == "OK")
+        {
+            $("#UserContainer").append("<div>user " + data + "rejected  invitation</div>");
+            $("#AUForm").submit();
+        }
+    }
+
+    function CancelInvite(em)
+    {
+        $.post("@Url.Action("CancelInvite")", { email: em }, onCancelResponse);
+    }
+
+
+    function onCancelResponse(data)
+    {
+        if (data == "OK")
+        {
+            $("#UserContainer").append("<div>user " + data + "cancelled invitation</div>");
+            $("#AUForm").submit();
+        }
+    }
+
+
+</script>

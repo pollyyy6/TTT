@@ -1,0 +1,192 @@
+﻿<script src="~/lib/microsoft-signalr/signalr.js"></script>
+<script src="~/js/SRM.js"></script>
+<script src="~/lib/vue/vue.global.js"></script>
+
+<style>
+    .ChatInline
+    {
+        display: inline-block;
+        position: relative;
+        width: 30%;
+    }
+</style>
+
+<div id="Chat">
+    <div class="ChatInline">
+        <div v-for="chat in chats">
+            <input type="hidden" v-model="chat.Id"/>
+            <div v-on:click="LoadChatMessages(chat.Id)">{{chat.Name}}</div>
+        </div>
+        <div v-if="!shownewchatname" v-on:click="NewChat">+</div>
+        <div v-if="shownewchatname">
+            <input type="text"  v-model="NewChatName" />
+            <input v-on:click="NewChatSend" type="button" />
+        </div>
+        
+    </div>
+    <div class="ChatInline">
+        <div v-for="msg in msgs">
+            <div>
+                user {{msg.user}} sent message: {{ msg.text }}
+            </div>
+        </div>
+        <div>
+            <input type="text" placeholder="message" v-model="ums" />
+            <input v-on:click="sendmessage" type="button" value="send" />
+        </div>
+    </div>
+    
+</div>
+
+<script>
+
+    class ChatListElement
+    {
+        constructor()
+        {
+        }
+        Id = 0;
+        Name = "";
+    }
+
+    class ChatData
+    {
+        constructor()
+        {
+        }
+        Messages = [];
+        Users = [];
+        ChatId = 0;
+    }
+
+    class ChatMessage
+    {
+        user = "";
+        text = "";
+    }
+
+    /*class*/ const Chat = {
+        data()
+        {
+            return {
+                NewChatName: "",
+                chats:[],
+                users:[],
+                ums: "",
+                chatID: 0,
+                msgs: [
+                    //{ user:"u1", text: 'Learn JavaScript' },
+                    //{ user:"u2", text: 'Learn Vue' },
+                    //{ user:"u3", text: 'Build something awesome' }
+                ],
+                shownewchatname:false
+            }
+        },
+        mounted()
+        {
+            this.getchats();
+        },
+        methods:
+        {
+            getusers()
+            {
+                var dt = {
+                    data: {
+                        Command: "Update",
+                        ChatId: this.chatID
+                    }
+                };
+                var self = this;
+                outstr = JSON.stringify(dt);
+
+                $.post('@Url.Action("Update","Chat")', "data="+dt, function (response)
+                {
+                    self.updatemes(response);
+                });
+            },
+            getchats()
+            {
+                var self = this;
+                $.post('@Url.Action("UpdateChats", "Chat")', function (response)
+                {
+                    self.updatechats(response);
+                });
+            },
+            LoadChatMessages(ChatId)
+            {
+                var self = this;
+                $.post('@Url.Action("ChatMessages", "Chat")', "id="+ChatId, function (response)
+                {
+                    self.updatechats(response);
+                });
+            },
+            getmes()
+            {
+                var dt = {
+                    data: {
+                        Command: "Update",
+                        ChatId: this.chatID
+                    }
+                };
+                var self = this;
+                outstr = JSON.stringify(dt);
+
+                $.post('@Url.Action("Update","Chat")', "data="+dt, function (response)
+                {
+                    self.updatemes(response);
+                });
+            },
+            updatechats(dt)
+            {
+                this.chats = JSON.parse(dt);
+                this.shownewchatname = false;
+            },
+            updatemes(dt)
+            {
+                this.message = "updated from server";
+
+                var cd = new ChatData();
+                cd = JSON.parse(dt);
+
+                this.msgs = cd.Messages;
+                this.users = cd.Users;
+            },
+            NewChat()
+            {
+                this.shownewchatname = true;
+            },
+            NewChatSend()
+            {
+                 var dt = {
+                     data: {
+                         ChatName: this.NewChatName
+                    }
+                };
+                var temp = JSON.stringify(dt);
+                var self = this;
+                $.post('@Url.Action("NewChat","Chat")', "data="+temp, function (response)
+                {
+                    self.updatechats(response);
+                });
+            },
+            sendmessage()
+            {
+
+                var dt = {
+                    data: {
+                        Message: this.ums,
+                        ChatId: this.chatID
+                    }
+                };
+                var temp = JSON.stringify(dt);
+                var self = this;
+                $.post('@Url.Action("UserMessage","Chat")', "data="+temp, function (response)
+                {
+                    self.updatemes(response);
+                });
+            }
+        }
+    }
+
+    var ChatApp = Vue.createApp(Chat).mount('#Chat');
+</script>
